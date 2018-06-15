@@ -6,6 +6,12 @@ project(tutorial06_texture)
 add_library(native_glue STATIC
     ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 
+# build shader c library
+set(SHADERC_DIR ${ANDROID_NDK}/sources/third_party/shaderc)
+execute_process(
+    COMMAND ${ANDROID_NDK}/ndk-build NDK_PROJECT_PATH=${SHADERC_DIR} APP_BUILD_SCRIPT=${SHADERC_DIR}/Android.mk APP_STL=c++_shared APP_ABI=${ANDROID_ABI} libshaderc_combined
+)
+
 # build Vulkan app
 set(SRC_DIR ${CMAKE_SOURCE_DIR})
 get_filename_component(REPO_ROOT_DIR
@@ -35,20 +41,5 @@ if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
        -Wl,--no-warn-mismatch")
 endif()
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
-target_link_libraries(vktuts native_glue log android)
-
-########     CDep package for shaderc    ######################
-# pre-requirement:
-#    in terminal, cd {project_dir}; ./cdep
-# that will generate .cdep/modules/cdep-dependencies-config.cmake
-# the next 2 lines will be able to pull it into the project
-# shaderc binaries are saved on github:
-#      https://github.com/ggfan/shaderc/releases
-# CDep fetches the lib with config file in ${project_dir}/cdep.yml
-# ******* Most Importantly, CDep full documentation is @:
-#  https://github.com/google/cdep
-get_filename_component(cdep-dependencies_DIR
-   ${CMAKE_SOURCE_DIR}/../../../../.cdep/modules  ABSOLUTE)
-find_package(cdep-dependencies REQUIRED)
-add_all_cdep_dependencies(vktuts)
-
+target_link_libraries(vktuts native_glue log android ${SHADERC_DIR}/libs/c++_shared/${ANDROID_ABI}/libshaderc.a)
+target_include_directories(vktuts PRIVATE ${SHADERC_DIR}/include)
