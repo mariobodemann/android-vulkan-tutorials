@@ -771,10 +771,10 @@ VkResult CreateGraphicsPipeline(void) {
       .pDynamicStates = nullptr};
 
   VkShaderModule vertexShader, fragmentShader;
-  buildShaderFromFile(androidAppCtx, "shaders/tri.vert",
+  buildShaderFromFile(androidAppCtx, "shaders/tri.vert.spv",
                       VK_SHADER_STAGE_VERTEX_BIT, device.device_,
                       &vertexShader);
-  buildShaderFromFile(androidAppCtx, "shaders/tri.frag",
+  buildShaderFromFile(androidAppCtx, "shaders/tri.frag.spv",
                       VK_SHADER_STAGE_FRAGMENT_BIT, device.device_,
                       &fragmentShader);
   // Specify vertex and fragment shader stages
